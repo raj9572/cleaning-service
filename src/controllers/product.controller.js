@@ -110,25 +110,22 @@ export const getProductById = async (req, res) => {
 
 //! UPDATE PRODUCT 
 export const updateProduct = async (req, res) => {
-    try {
-        const updates = req.body;
+     try {
+        const productId = req.params.id;
+        const updates = req.body
 
-        // Optional validation (if category/subcategory updated)
-        if (updates.category) {
-            const exists = await Category.findById(updates.category);
-            if (!exists) return res.status(400).json(ErrorResponse(400,"Invalid Category"));
-        }
+        let updatedProduct 
+       try {
 
-        if (updates.subCategory) {
-            const exists = await SubCategory.findById(updates.subCategory);
-            if (!exists) return res.status(400).json(ErrorResponse(400,"Invalid sub category"));
-        }
-
-        const updatedProduct = await Product.findByIdAndUpdate(
-            req.params.id,
-            updates,
-            { new: true }
-        );
+          updatedProduct = await Product.findByIdAndUpdate(
+             req.params.id,
+             updates,
+             { new: true }
+         );
+ 
+       } catch (error) {
+         return res.status(400).json(ErrorResponse(400,error.message))
+       }
 
         if (!updatedProduct)
             return res.status(404).json(ErrorResponse(404,"product not found"));
@@ -136,7 +133,7 @@ export const updateProduct = async (req, res) => {
         res.status(200).json(createResponse(200, updatedProduct, "Product updated successfully"));
 
     } catch (error) {
-        res.status(500).json({ message: "Server Error", error: error.message });
+        res.status(500).json(ErrorResponse(500,"internal server error"));
     }
 };
 
