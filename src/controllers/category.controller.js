@@ -37,29 +37,36 @@ const fetchAllCategoryansSubCategory = async (req, res) => {
 };
 
 const createSubCategory = async (req, res) => {
-  const { title, image, category, key } = req.body;
-  console.log(req.body);
+  try {
+    const { title, image, category, key } = req.body;
+    // console.log(req.body);
+  
+    if (!title || !category || !key) {
+      return res.status(400).json(ErrorResponse(400, "All field  is required"));
+    }
+  
+    const Category = await categoryModel.findOne({key:category});
+    // console.log(Category)
 
-  if (!title || !category) {
-    return res.status(400).json(ErrorResponse(400, "All field  is required"));
+    if(!Category) return res.status(404).json(ErrorResponse(404, "Category not found"))
+  
+    const newSubCategory = await subCategoryModel.create({
+      title,
+      key,
+      image,
+      category: Category._id,
+    });
+  
+    Category.subCategory.push(newSubCategory._id);
+    Category.save();
+  
+    return res
+      .status(201)
+      .json(createResponse(201, newSubCategory, "subCategory is successfully"));
+
+  } catch (error) {
+    return res.status(500).json(ErrorResponse(500, "internal server error"));
   }
-
-  const Category = await categoryModel.findById(category);
-  // console.log(Category)
-
-  const newSubCategory = await subCategoryModel.create({
-    title,
-    key,
-    image,
-    category: Category._id,
-  });
-
-  Category.subCategory.push(newSubCategory._id);
-  Category.save();
-
-  return res
-    .status(201)
-    .json(createResponse(201, {}, "subCategory is successfully"));
 };
 
 const fetchSubCategory = async (req, res) => {

@@ -4,6 +4,7 @@ import cors from "cors";
 import authRouter from "./routes/auth.routes.js";
 import categoryRouter from './routes/category.route.js'
 import productRoutes from "./routes/product.routes.js";
+import orderRoutes from "./routes/order.routes.js";
 import swaggerUi from "swagger-ui-express"
 import { readFileSync } from "fs";
 // import swaggerDocument  from "./swagger-output.json" assert { type: 'json' };
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use("/api/auth", authRouter);
 app.use("/api/category", categoryRouter);
 app.use("/api/product", productRoutes);
+app.use("/api/order", orderRoutes);
 
 const swaggerDocument = JSON.parse(
   readFileSync(new URL("./swagger-output.json", import.meta.url), "utf-8")
