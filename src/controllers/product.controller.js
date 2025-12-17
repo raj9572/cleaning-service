@@ -174,7 +174,8 @@ export const disableEnableProduct = async (req, res) => {
         )
       );
   } catch (error) {
-    res.status(500).json(ErrorResponse(500, "internal server error"));
+    res.status(500).json(ErrorResponse(500, error.message));
+    console.log(error.message);
   }
 };
 
