@@ -69,25 +69,25 @@ export const getAllProducts = async (req, res) => {
 };
 
 //!SEARCH  PRODUCTS
+//!SEARCH PRODUCTS
 export const getProducts = async (req, res) => {
   try {
-    const { category, subCategory, search } = req.query;
+    const { category, subcategory, search } = req.query;
 
     const filter = {};
 
     if (category) filter.category = category;
-    if (subCategory) filter.subCategory = subCategory;
+    if (subcategory) filter.subcategory = subcategory;
 
-    // Search by title (case-insensitive)
-    if (search) filter.title = { $regex: search, $options: "i" };
+    if (search) {
+      filter.title = { $regex: search, $options: "i" };
+    }
 
-    const products = await Product.find(filter).populate(
-      "category subCategory"
-    );
+    const products = await Product.find(filter);
 
     res.status(200).json(createResponse(200, products, ""));
   } catch (error) {
-    res.status(500).json(ErrorResponse(500, "internal server error"));
+    res.status(500).json(ErrorResponse(500, "Internal server error"));
   }
 };
 
@@ -107,31 +107,30 @@ export const getProductById = async (req, res) => {
 
 //! UPDATE PRODUCT
 export const updateProduct = async (req, res) => {
-     try {
-        const productId = req.params.id;
-        const updates = req.body
+  try {
+    const productId = req.params.id;
+    const updates = req.body;
 
-        let updatedProduct 
-       try {
-
-          updatedProduct = await Product.findByIdAndUpdate(
-             productId,
-             updates,
-             { new: true }
-         );
- 
-       } catch (error) {
-         return res.status(400).json(ErrorResponse(400,error.message))
-       }
+    let updatedProduct;
+    try {
+      updatedProduct = await Product.findByIdAndUpdate(productId, updates, {
+        new: true,
+      });
+    } catch (error) {
+      return res.status(400).json(ErrorResponse(400, error.message));
+    }
 
     if (!updatedProduct)
       return res.status(404).json(ErrorResponse(404, "product not found"));
 
-      return res.status(200).json(createResponse(200, updatedProduct, "Product updated successfully"));
-
-    } catch (error) {
-        res.status(500).json(ErrorResponse(500,"internal server error"));
-    }
+    return res
+      .status(200)
+      .json(
+        createResponse(200, updatedProduct, "Product updated successfully")
+      );
+  } catch (error) {
+    res.status(500).json(ErrorResponse(500, "internal server error"));
+  }
 };
 
 //! DELETE PRODUCT
