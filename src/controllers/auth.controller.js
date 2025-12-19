@@ -4,10 +4,13 @@ import { createResponse, ErrorResponse } from "../utils/responseWrapper.js";
 
 export const register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
-
+    const { name, email, password,confirmPassword } = req.body;
+    
+    console.log('body',req.body)
     const exists = await User.findOne({ email });
-    if (exists) return res.status(400).json(ErrorResponse(500,"User already exist"));
+    if (exists) return res.status(400).json(ErrorResponse(400,"User already exist"));
+
+    if(password !== confirmPassword) return res.status(404).json(ErrorResponse(400,"Password doesnot match"));
 
     const hashed = await bcrypt.hash(password, 10);
 
@@ -25,6 +28,7 @@ export const login = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json(ErrorResponse(400,"User Not Found"));
+
 
     const match = await bcrypt.compare(password, user.password);
 

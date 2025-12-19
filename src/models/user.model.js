@@ -15,6 +15,9 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
+  confirmPassword:{
+    type: String,
+  },
    role: {
         type: String,
         default: "CUSTOMER"
