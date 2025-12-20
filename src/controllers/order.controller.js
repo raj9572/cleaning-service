@@ -121,7 +121,7 @@ export const orderCompleted = async (req, res) => {
 
     const updatedOrder = await orderModel.findByIdAndUpdate(
       orderId,
-      {isCompleted:true},
+      {isCompleted:true,isTaken:true},
       { new: true }
     )
 
