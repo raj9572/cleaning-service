@@ -32,7 +32,8 @@ export const createOrder = async (req, res) => {
         return res.status(400).json({ message: `${dbProduct.title} is currently unavailable` });
       }
 
-      const subtotal = dbProduct.price * item.quantity;
+      
+      const subtotal = Number(dbProduct.price.split(" ")[1]) * item.quantity;
 
       totalAmount += subtotal;
 
@@ -52,18 +53,17 @@ export const createOrder = async (req, res) => {
 
     // Create order document
     const newOrder = new orderModel({
-      takenBy: customerId,
+      takenBy: null,
       products: orderItems,
       shippingAddress,
       totalAmount,
-      isTaken: true
+      isTaken: false
     });
 
     await newOrder.save();
 
 
     const savedOrder = await orderModel.findById(newOrder._id)
-      .populate("takenBy", "name email")
       .populate("products.product", "title images");
 
     res.status(201).json(createResponse(201, savedOrder, "order place successfully"));
@@ -76,6 +76,20 @@ export const createOrder = async (req, res) => {
 
 
 export const fetchAllOrders = async (req, res) => {
+  try {
+
+    const allOrders = await orderModel.find({})
+
+
+    return res.status(200).json(createResponse(200, allOrders, "all orders are fetched"))
+
+  } catch (error) {
+    res.status(500).json(ErrorResponse(500, error.message));
+  }
+};
+
+
+export const fetchUserAllOrders = async (req, res) => {
   try {
     const userId = req.params.userId
 
@@ -115,13 +129,39 @@ export const fetchOrderDetails = async (req, res) => {
 };
 
 
+export const acceptOrderRequest = async (req, res) => {
+  try {
+    const {orderId, workerId} = req.body
+
+    const orderDetails = await orderModel.findById(orderId)
+
+    if (!orderDetails) {
+      return res.status(400).json(ErrorResponse(400, "order are not valid"))
+    }
+
+
+    orderDetails.takenBy=workerId
+    orderDetails.isTaken = true;
+
+    await orderDetails.save()
+
+
+    return res.status(200).json(createResponse(200, orderDetails, "order Accepted"))
+
+  } catch (error) {
+    res.status(500).json(ErrorResponse(500, error.message));
+  }
+};
+
+
+
 export const orderCompleted = async (req, res) => {
   try {
     const orderId = req.params.id
 
     const updatedOrder = await orderModel.findByIdAndUpdate(
       orderId,
-      {isCompleted:true,isTaken:true},
+      {isCompleted:true},
       { new: true }
     )
 
