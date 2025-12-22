@@ -1,85 +1,97 @@
 import mongoose from "mongoose";
 
-const orderProductSchema = new mongoose.Schema({
+const orderProductSchema = new mongoose.Schema(
+  {
     product: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Product",
-        required: true
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+      required: true,
     },
     title: String, // snapshot in case product is deleted later
-    images:[],
-    category:String,
-    subcategory:String,
+    images: [],
+    category: String,
+    subcategory: String,
     price: Number,
     quantity: {
-        type: Number,
+      type: Number,
     },
-    subtotal: Number,   // calculated: quantity * effective price
-}, { _id: false });
+    subtotal: Number, // calculated: quantity * effective price
+  },
+  { _id: false }
+);
 
-
-const shippingSchema = new mongoose.Schema({
+const shippingSchema = new mongoose.Schema(
+  {
     fullName: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     phone: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     addressLine: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     landmark: String,
     city: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     state: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     postalCode: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
-}, { _id: false });
-
-
-
-const orderSchema = new mongoose.Schema({
-  
-  takenBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    default:null
+    date: {
+      type: String,
+      required: true,
+    },
+    time: {
+      type: String,
+      required: true,
+    },
   },
+  { _id: false }
+);
 
-  products: {
-    type: [orderProductSchema],
-    required: true
-  },
+const orderSchema = new mongoose.Schema(
+  {
+    takenBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
 
-  shippingAddress: {
-    type: shippingSchema,
-    required: true
-  },
+    products: {
+      type: [orderProductSchema],
+      required: true,
+    },
 
-  totalAmount: {
-    type: Number,
-    required: true
-  },
+    shippingAddress: {
+      type: shippingSchema,
+      required: true,
+    },
 
-  isTaken: {
-    type: Boolean,
-    default: false 
-  },
-  isCompleted: {
-    type: Boolean,
-    default: false 
-  },
+    totalAmount: {
+      type: Number,
+      required: true,
+    },
 
-}, { timestamps: true });
+    isTaken: {
+      type: Boolean,
+      default: false,
+    },
+    isCompleted: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  { timestamps: true }
+);
 
 export default mongoose.model("Order", orderSchema);
