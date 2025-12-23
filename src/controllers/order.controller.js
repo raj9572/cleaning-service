@@ -61,6 +61,7 @@ export const createOrder = async (req, res) => {
       shippingAddress,
       totalAmount,
       isTaken: false,
+      customerId,
     });
 
     await newOrder.save();

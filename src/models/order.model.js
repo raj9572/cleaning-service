@@ -90,6 +90,11 @@ const orderSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    customerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
   },
   { timestamps: true }
 );
